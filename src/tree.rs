@@ -18,6 +18,7 @@ use ff::{Field, PrimeField, PrimeFieldBits};
 use lazy_static::lazy_static;
 use rand::RngCore;
 use serde::de::{Deserializer, Error};
+use std::io::{Read, Write};
 use serde::ser::Serializer;
 use serde::{Deserialize, Serialize};
 use subtle::{Choice, ConditionallySelectable, CtOption};
@@ -241,6 +242,17 @@ impl<'de> Deserialize<'de> for MerkleHashOrchard {
         )
         })
     }
+}
+
+// HashSer trait for compatibility with zcash_primitives wallet serialization
+pub trait HashSer {
+    /// Parses a node from the given byte source.
+    fn read<R: Read>(reader: R) -> std::io::Result<Self>
+    where
+        Self: Sized;
+
+    /// Serializes this node.
+    fn write<W: Write>(&self, writer: W) -> std::io::Result<()>;
 }
 
 // Implementation of HashSer trait for compatibility with zcash_primitives
