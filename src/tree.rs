@@ -244,20 +244,9 @@ impl<'de> Deserialize<'de> for MerkleHashOrchard {
     }
 }
 
-// HashSer trait for compatibility with zcash_primitives wallet serialization
-pub trait HashSer {
-    /// Parses a node from the given byte source.
-    fn read<R: Read>(reader: R) -> std::io::Result<Self>
-    where
-        Self: Sized;
-
-    /// Serializes this node.
-    fn write<W: Write>(&self, writer: W) -> std::io::Result<()>;
-}
-
-// Implementation of HashSer trait for compatibility with zcash_primitives
+// Implementation of zcash_primitives::merkle_tree::HashSer trait for MerkleHashOrchard
 // This allows MerkleHashOrchard to be used in wallet tree serialization/deserialization
-impl HashSer for MerkleHashOrchard {
+impl zcash_primitives::merkle_tree::HashSer for MerkleHashOrchard {
     fn read<R: std::io::Read>(mut reader: R) -> std::io::Result<Self> {
         let mut bytes = [0u8; 32];
         reader.read_exact(&mut bytes)?;
