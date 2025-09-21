@@ -243,6 +243,31 @@ impl<'de> Deserialize<'de> for MerkleHashOrchard {
     }
 }
 
+// Implementation of HashSer trait for compatibility with zcash_primitives
+// This allows MerkleHashOrchard to be used in wallet tree serialization/deserialization
+impl HashSer for MerkleHashOrchard {
+    fn read<R: std::io::Read>(mut reader: R) -> std::io::Result<Self> {
+        let mut bytes = [0u8; 32];
+        reader.read_exact(&mut bytes)?;
+
+        Self::from_bytes(&bytes)
+            .into_option()
+            .ok_or_else(|| {
+                std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "Invalid MerkleHashOrchard bytes"
+                )
+            })
+    }
+
+    fn write<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
+        writer.write_all(&self.to_bytes())
+    }
+}
+
+// Re-export the HashSer trait so it's available when using this module
+pub use HashSer;
+
 /// Generators for property testing.
 #[cfg(any(test, feature = "test-dependencies"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "test-dependencies")))]
