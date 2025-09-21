@@ -262,14 +262,12 @@ impl HashSer for MerkleHashOrchard {
         let mut bytes = [0u8; 32];
         reader.read_exact(&mut bytes)?;
 
-        Self::from_bytes(&bytes)
-            .into_option()
-            .ok_or_else(|| {
-                std::io::Error::new(
-                    std::io::ErrorKind::InvalidData,
-                    "Invalid MerkleHashOrchard bytes"
-                )
-            })
+        Option::from(Self::from_bytes(&bytes)).ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Invalid MerkleHashOrchard bytes"
+            )
+        })
     }
 
     fn write<W: std::io::Write>(&self, mut writer: W) -> std::io::Result<()> {
