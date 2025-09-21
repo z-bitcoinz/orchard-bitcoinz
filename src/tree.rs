@@ -265,8 +265,7 @@ impl HashSer for MerkleHashOrchard {
     }
 }
 
-// Re-export the HashSer trait so it's available when using this module
-pub use HashSer;
+// HashSer trait implementation is above
 
 /// Generators for property testing.
 #[cfg(any(test, feature = "test-dependencies"))]
